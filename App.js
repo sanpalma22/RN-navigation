@@ -1,100 +1,171 @@
 import * as React from 'react';
-import { Button, TextInput, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Button, TextInput, Text, View, StyleSheet } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 // Screens del Primer Stack
-function ScreenA1() {
-  const navigation = useNavigation();
+
+function ScreenInicio() {
   return (
-    <View style={styles.homeScreen}>
-      <Text style={styles.text}>HOME</Text>
-      {/* Additional content can go here */}
+    <View style={estilos.screenA}>
+      <Text style={estilos.texto}>INICIO</Text>
     </View>
   );
 }
 
-function ScreenA2() {
-  const navigation = useNavigation();
+// Screen Buscador
+function ScreenBuscador() {
+  const [busqueda, setBusqueda] = React.useState('');
+
   return (
-    <View style={styles.homeScreen}>
-      <Text style={styles.text}>HOME 2</Text>
-      {/* Additional content can go here */}
+    <View style={estilos.screenB}>
+      <Text style={estilos.texto}>Buscador</Text>
+      <TextInput 
+        style={estilos.input} 
+        placeholder="Buscar..." 
+        value={busqueda} 
+        onChangeText={setBusqueda} 
+      />
+      <Button title="Buscar" onPress={() => alert(`Buscando: ${busqueda}`)} />
     </View>
   );
 }
 
-// Screens del Primer Stack
-function ScreenB1() {
-  // Implementation for ScreenB1
-}
+// Screen de Perfil (Recoger datos)
+function ScreenDatosPerfil({ navigation }) {
+  const [nombre, setNombre] = React.useState('');
+  const [telefono, setTelefono] = React.useState('');
 
-function ScreenB2() {
-  // Implementation for ScreenB2
-}
-
-// Screens del Tercer Stack
-function ScreenC1() {
-  // Implementation for ScreenC1
-}
-
-function ScreenC2() {
-  // Implementation for ScreenC2
-}
-
-// Creación de los stacks
-const StackA = createNativeStackNavigator();
-const StackB = createNativeStackNavigator();
-const StackC = createNativeStackNavigator();
-
-// Stack navigators
-function StackANavigator() {
   return (
-    <StackA.Navigator>
-      <StackA.Screen name="ScreenA1" component={ScreenA1} />
-      <StackA.Screen name="ScreenA2" component={ScreenA2} />
-    </StackA.Navigator>
+    <View style={estilos.screenC}>
+      <Text style={estilos.texto}>Introduce tus datos</Text>
+      <TextInput 
+        style={estilos.input} 
+        placeholder="Nombre" 
+        value={nombre}
+        onChangeText={setNombre} 
+      />
+      <TextInput 
+        style={estilos.input} 
+        placeholder="Teléfono" 
+        keyboardType="numeric" 
+        value={telefono}
+        onChangeText={setTelefono} 
+      />
+      <Button 
+        title="Guardar y Ver Perfil" 
+        onPress={() => navigation.navigate('ScreenDetallesPerfil', { nombre, telefono })} 
+      />
+    </View>
   );
 }
 
-function StackBNavigator() {
+// Screen para mostrar los datos del perfil
+function ScreenDetallesPerfil({ route }) {
+  const { nombre, telefono } = route.params;
+
   return (
-    <StackB.Navigator>
-      <StackB.Screen name="ScreenB1" component={ScreenB1} />
-      <StackB.Screen name="ScreenB2" component={ScreenB2} />
-    </StackB.Navigator>
+    <View style={estilos.screenC}>
+      <Text style={estilos.texto}>Datos del perfil:</Text>
+      <Text style={estilos.texto}>Nombre: {nombre}</Text>
+      <Text style={estilos.texto}>Teléfono: {telefono}</Text>
+    </View>
   );
 }
 
-function StackCNavigator() {
+// Screen de Configuración
+function ScreenConfiguracion() {
   return (
-    <StackC.Navigator>
-      <StackC.Screen name="ScreenC1" component={ScreenC1} />
-      <StackC.Screen name="ScreenC2" component={ScreenC2} />
-    </StackC.Navigator>
+    <View style={estilos.screenD}>
+      <Text style={estilos.texto}>Configuración de la App</Text>
+    </View>
+  );
+}
+
+// Creación de los Stack Navigators
+const StackInicio = createNativeStackNavigator();
+const StackBuscador = createNativeStackNavigator();
+const StackPerfil = createNativeStackNavigator();
+const StackConfiguracion = createNativeStackNavigator();
+
+function NavegadorStackInicio() {
+  return (
+    <StackInicio.Navigator>
+      <StackInicio.Screen name="ScreenInicio" component={ScreenInicio} />
+    </StackInicio.Navigator>
+  );
+}
+
+function NavegadorStackBuscador() {
+  return (
+    <StackBuscador.Navigator>
+      <StackBuscador.Screen name="ScreenBuscador" component={ScreenBuscador} />
+    </StackBuscador.Navigator>
+  );
+}
+
+function NavegadorStackPerfil() {
+  return (
+    <StackPerfil.Navigator>
+      <StackPerfil.Screen name="ScreenDatosPerfil" component={ScreenDatosPerfil} />
+      <StackPerfil.Screen name="ScreenDetallesPerfil" component={ScreenDetallesPerfil} />
+    </StackPerfil.Navigator>
+  );
+}
+
+function NavegadorStackConfiguracion() {
+  return (
+    <StackConfiguracion.Navigator>
+      <StackConfiguracion.Screen name="ScreenConfiguracion" component={ScreenConfiguracion} />
+    </StackConfiguracion.Navigator>
   );
 }
 
 // Creación del BottomTabNavigator
-const Tab = createBottomTabNavigator();
+const Pestañas = createBottomTabNavigator();
 
-function MyTabs() {
+function MisPestañas() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={StackANavigator} />
-      <Tab.Screen name="Buscador" component={StackBNavigator} />
-      <Tab.Screen 
+    <Pestañas.Navigator>
+      <Pestañas.Screen 
+        name="Inicio" 
+        component={NavegadorStackInicio} 
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="home" size={24} color={color} />
+          ),
+        }}
+      />
+      <Pestañas.Screen 
+        name="Buscar" 
+        component={NavegadorStackBuscador} 
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="search" size={24} color={color} />
+          ),
+        }}
+      />
+      <Pestañas.Screen 
         name="Perfil" 
-        component={StackCNavigator} 
+        component={NavegadorStackPerfil} 
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="person" size={24} color={color} />
           ),
-        }} 
+        }}
       />
-    </Tab.Navigator>
+      <Pestañas.Screen 
+        name="Configuración" 
+        component={NavegadorStackConfiguracion} 
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={24} color={color} />
+          ),
+        }}
+      />
+    </Pestañas.Navigator>
   );
 }
 
@@ -102,27 +173,48 @@ function MyTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <MyTabs />
+      <MisPestañas />
     </NavigationContainer>
   );
 }
 
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  text: {
-    color: 'white',
+// Estilos
+const estilos = StyleSheet.create({
+  texto: {
+    color: 'black',
     fontSize: 20,
+    marginBottom: 10,
   },
-  homeScreen: {
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 8,
+    width: '80%',
+  },
+  screenA: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ff0000',
+    backgroundColor: '#FFAEC9',
+  },
+  screenB: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFC90E',
+  },
+  screenC: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#22B14C',
+  },
+  screenD: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
 });
